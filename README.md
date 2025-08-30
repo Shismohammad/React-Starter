@@ -1,2 +1,3 @@
 # React-Starter
-React JS starter project
+
+React JS Template

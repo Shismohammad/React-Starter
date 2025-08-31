@@ -19,11 +19,12 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = 'Your JWT Token here';
+    // Store Access Token in memory variable etc.
+    const accessToken = 'Your JWT Access Token here';
 
     config.headers.Authorization =
-      !config._retry && token
-        ? `Bearer ${token}`
+      !config._retry && accessToken
+        ? `Bearer ${accessToken}`
         : config.headers.Authorization;
     return config;
   },
@@ -45,7 +46,9 @@ api.interceptors.response.use(
     if (error.response.status === 403 && !originalRequest?.sent) {
       try {
         originalRequest.sent = true;
-        const response = await api.get('api/refreshToken');
+        const response = await api.get('api/refreshToken', {
+          withCredentials: true,
+        });
 
         // setToken(response.data.accessToken);
 

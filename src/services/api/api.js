@@ -11,6 +11,7 @@ export const API_CONFIG = {
 // const encodedQuery = encodeURIComponent(query);
 
 import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const api = axios.create({
   baseURL: `${API_CONFIG.API_URL}`,
@@ -31,15 +32,19 @@ api.interceptors.request.use(
   }
 );
 
+const location = useLocation();
+const navigate = useNavigate();
+
 api.interceptors.response.use(
   (response) => {
     return response;
   },
   async (error) => {
-    const originalRequest = error.config;
+    let originalRequest = error.config;
 
-    if (error.response.status === 403) {
+    if (error.response.status === 403 && !originalRequest?.sent) {
       try {
+        originalRequest.sent = true;
         const response = await api.get('api/refreshToken');
 
         // setToken(response.data.accessToken);
@@ -47,12 +52,13 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
 
         originalRequest._retry = true;
-        
+
         return api(originalRequest);
       } catch (e) {
         // setToken(null);
         // removeLocalStorageToken
         window.location.href = '/login';
+        // navigate('/login', { state: { from: location }, replace: true });
       }
     }
     return Promise.reject(error);

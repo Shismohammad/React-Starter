@@ -12,6 +12,9 @@ export const API_CONFIG = {
 
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useUserStore from '../../store/zustand/userStore';
+
+const { user, accessToken } = useUserStore();
 
 const api = axios.create({
   baseURL: `${API_CONFIG.API_URL}`,
@@ -20,7 +23,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     // Store Access Token in memory variable etc.
-    const accessToken = 'Your JWT Access Token here';
+    const accessToken = accessToken;
 
     config.headers.Authorization =
       !config._retry && accessToken

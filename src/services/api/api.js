@@ -15,13 +15,13 @@ api.interceptors.request.use(
     // Get Access Token in stored in memory (variable) etc.
     const accessToken = useUserStore.getState().accessToken;
 
-    console.log('Access Token from store:', accessToken);
+    // console.log('Access Token from store:', accessToken);
 
     if (!config._retry && accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
-    console.warn('API Request config:', config.headers.Authorization);
+    // console.warn('API Request config:', config.headers.Authorization);
 
     return config;
   },
@@ -30,7 +30,7 @@ api.interceptors.request.use(
   }
 );
 
-/*  This will handle token refresh logic when a 403 response is received from the server */
+/*  This will handle token refresh logic when a 401 response is received from the server */
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -38,29 +38,32 @@ api.interceptors.response.use(
   async (error) => {
     let originalRequest = error.config;
 
-    console.log('Error response:', error.response.status);
-
-    if (error?.response?.status === 401 && !originalRequest?.sent) {
+    if (error.response.status === 401 && !originalRequest?.sent) {
       try {
         originalRequest.sent = true;
-        const response = await api.get('/users/refresh-token', {
+
+        // Call the refresh token endpoint to get a new access token
+        const response = await api.post('/users/refresh-token', {
           withCredentials: true,
         });
 
-        console.log('new Refresh token response:', response.data.accessToken);
+        // console.log('New Access token:', response.data.data.accessToken);
 
-        // Set the new access token in the zustand store
-        if (response.data.accessToken) {
-          useUserStore.setState({ accessToken: response.data.accessToken });
+        if (response.data.data.accessToken) {
+          // Update the original request with the new access token
+          originalRequest.headers.Authorization = `Bearer ${response.data.data.accessToken}`;
+
+          // Set the new access token in the zustand store
+          useUserStore.setState({
+            accessToken: response.data.data.accessToken,
+          });
         }
-
-        originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
 
         originalRequest._retry = true;
 
         return api(originalRequest);
       } catch (e) {
-        // removeLocalStorageToken or setToken(null) and navigate to login
+        // remove token from LocalStorage or setToken(null) and navigate to login
         useUserStore.setState({ user: null, accessToken: null, role: null });
         window.location.href = '/login';
         // navigate('/login', { state: { from: location }, replace: true });

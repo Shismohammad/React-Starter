@@ -10,14 +10,11 @@ export default function Login() {
     const email = formData.get('email');
     const password = formData.get('password');
 
-    console.log('Logging in with:', { email, password });
-
     try {
       const response = await login({ email, password });
-      console.log('Login response:', response);
       setUser(response.user);
       setAccessToken(response.accessToken);
-      alert('Login successful');
+      console.log('User Login successfully');
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -27,13 +24,13 @@ export default function Login() {
     <div className="h-screen justify-center items-center flex">
       <form
         onSubmit={(event) => handleSubmit(event)}
-        className="space-y-4 w-64"
+        className="space-y-4 w-72"
       >
         <>
           <label className="block">
             <span>Email</span>
             <input
-              className="flex h-9 w-full rounded-md border-fuchsia-500 border-1 shadow-md mt-1"
+              className="flex h-9 w-full rounded-md border-fuchsia-500 border-1 shadow-md mt-1 px-3"
               type="email"
               name="email"
               autoComplete="email"
@@ -42,7 +39,7 @@ export default function Login() {
           <label className="block">
             <span>Password</span>
             <input
-              className="flex h-9 w-full rounded-md border-fuchsia-500 border-1 shadow-md mt-1"
+              className="flex h-9 w-full rounded-md border-fuchsia-500 border-1 shadow-md mt-1 px-3"
               type="password"
               name="password"
               autoComplete="current-password"
@@ -51,11 +48,11 @@ export default function Login() {
           <div className="justify-center flex flex-col gap-4">
             <button
               type="submit"
-              className="bg-fuchsia-600 h-9 px-4 py-2 rounded-full text-white hover:bg-fuchsia-500"
+              className="bg-fuchsia-600 h-9 rounded-full text-white hover:bg-fuchsia-500"
             >
               Log in
             </button>
-            <button className="font-medium text-blue-600 hover:text-blue-400">
+            <button className="h-9 rounded-full text-fuchsia-600 hover:text-fuchsia-400 border-fuchsia-600 border-1">
               Register
             </button>
           </div>

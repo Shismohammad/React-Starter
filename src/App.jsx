@@ -5,22 +5,21 @@ import { getCurrentUser } from './services/user/user-service';
 import { logout } from './services/auth/auth-service';
 
 export default function App() {
-  const { user, accessToken } = useUserStore();
+  const { user } = useUserStore();
 
   useEffect(() => {
-    console.log(user);
-    console.log(accessToken);
+    // console.log(user);
   }, []);
 
   const getUser = async () => {
     const response = await getCurrentUser();
-    console.log(response);
+    // console.log(response);
   };
 
   const logoutUser = async () => {
     const response = await logout();
 
-    console.log(response);
+    // console.log(response);
 
     if (response.statusCode === 200 && response.success) {
       console.log('User logged out successfully');
@@ -44,7 +43,7 @@ export default function App() {
           logoutUser();
         }}
         type="submit"
-        className="bg-lime-500 h-9 px-4 py-2 rounded-full text-white hover:bg-lime-300"
+        className="bg-lime-500 h-9 px-4 rounded-full text-white hover:bg-lime-300"
       >
         Log Out
       </button>
@@ -53,7 +52,7 @@ export default function App() {
           getUser();
         }}
         type="submit"
-        className="bg-fuchsia-600 h-9 px-4 py-2 rounded-full text-white hover:bg-fuchsia-500"
+        className="bg-fuchsia-600 h-9 px-4 rounded-full text-white hover:bg-fuchsia-500"
       >
         Get User
       </button>

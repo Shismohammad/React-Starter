@@ -1,16 +1,32 @@
-import { Link } from 'react-router-dom';
 import useUserStore from '../../store/zustand/userStore';
+import { login } from '../../services/auth/auth-service';
 
 export default function Login() {
   const { setUser, setAccessToken } = useUserStore();
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const email = formData.get('email');
+    const password = formData.get('password');
+
+    console.log('Logging in with:', { email, password });
+
+    try {
+      const response = await login({ email, password });
+      console.log('Login response:', response);
+      setUser(response.user);
+      setAccessToken(response.accessToken);
+      alert('Login successful');
+    } catch (error) {
+      console.error('Login error:', error);
+    }
+  };
+
   return (
     <div className="h-screen justify-center items-center flex">
       <form
-        onSubmit={(values) => {
-          setUser({ id: 1, name: 'John', role: 'admin' });
-          setAccessToken('access-token');
-        }}
+        onSubmit={(event) => handleSubmit(event)}
         className="space-y-4 w-64"
       >
         <>

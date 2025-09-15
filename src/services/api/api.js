@@ -1,34 +1,28 @@
-export const API_CONFIG = {
-  API_URL: 'https://api.example.com',
-  HEADERS: {
-    'Content-Type': 'application/json',
-    accept: 'application/json',
-    Authorization: `Bearer ${'JWT_TOKEN'}`,
-  },
-};
-
-// Encode the query parameters for the API request to prevent issues with special characters
-// const encodedQuery = encodeURIComponent(query);
-
 import axios from 'axios';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { API_CONFIG } from '../../constants/constants';
 import useUserStore from '../../store/zustand/userStore';
-
-const { user, accessToken } = useUserStore();
 
 const api = axios.create({
   baseURL: `${API_CONFIG.API_URL}`,
+  timeout: `${API_CONFIG.TIMEOUT}`,
+  headers: `${API_CONFIG.HEADERS}`,
+  withCredentials: true,
 });
 
+/*  This will ensure that the access token is included in the headers of every request made by the API client */
 api.interceptors.request.use(
   (config) => {
-    // Store Access Token in memory variable etc.
-    const accessToken = accessToken;
+    // Get Access Token in stored in memory (variable) etc.
+    const accessToken = useUserStore.getState().accessToken;
 
-    config.headers.Authorization =
-      !config._retry && accessToken
-        ? `Bearer ${accessToken}`
-        : config.headers.Authorization;
+    console.log('Access Token from store:', accessToken);
+
+    if (!config._retry && accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+
+    console.warn('API Request config:', config.headers.Authorization);
+
     return config;
   },
   (error) => {
@@ -36,9 +30,7 @@ api.interceptors.request.use(
   }
 );
 
-const location = useLocation();
-const navigate = useNavigate();
-
+/*  This will handle token refresh logic when a 403 response is received from the server */
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -46,14 +38,21 @@ api.interceptors.response.use(
   async (error) => {
     let originalRequest = error.config;
 
-    if (error.response.status === 403 && !originalRequest?.sent) {
+    console.log('Error response:', error.response.status);
+
+    if (error?.response?.status === 401 && !originalRequest?.sent) {
       try {
         originalRequest.sent = true;
-        const response = await api.get('api/refreshToken', {
+        const response = await api.get('/users/refresh-token', {
           withCredentials: true,
         });
 
-        // setToken(response.data.accessToken);
+        console.log('new Refresh token response:', response.data.accessToken);
+
+        // Set the new access token in the zustand store
+        if (response.data.accessToken) {
+          useUserStore.setState({ accessToken: response.data.accessToken });
+        }
 
         originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
 
@@ -61,8 +60,8 @@ api.interceptors.response.use(
 
         return api(originalRequest);
       } catch (e) {
-        // setToken(null);
-        // removeLocalStorageToken
+        // removeLocalStorageToken or setToken(null) and navigate to login
+        useUserStore.setState({ user: null, accessToken: null, role: null });
         window.location.href = '/login';
         // navigate('/login', { state: { from: location }, replace: true });
       }
@@ -72,43 +71,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-
-// const axiosHttp = axios.create({
-//   baseURL: `${API_CONFIG.API_URL}`,
-// });
-
-// axiosHttp.interceptors.request.use(
-//   (config) => {
-//     const token = 'Your JWT Token here';
-//     return {
-//       ...config,
-//       headers: {
-//         ...(token !== null && { Authorization: `${token}` }),
-//         ...config.headers,
-//       },
-//     };
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
-
-// axiosHttp.interceptors.response.use(
-//   (response) => {
-//     //const url = response.config.url;
-
-//     //setLocalStorageToken(token);
-//     return response;
-//   },
-//   (error) => {
-//     if (error.response.status === 401) {
-//       //(`unauthorized :)`);
-//       //localStorage.removeItem("persist:root");
-//       //removeLocalStorageToken
-//       //window.location.href = "/login";
-//     }
-//     return Promise.reject(error);
-//   }
-// );
-
-// export default axiosHttp;

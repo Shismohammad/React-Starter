@@ -14,7 +14,7 @@ const useUserStore = create((set, get) => ({
     accessToken: get().accessToken,
   }),
   updateAccessToken: (accessToken) => set({ accessToken }),
-  logout: () => set({ user: null, accessToken: null, isLoggedIn: false, role: null }),
+  logout: () => set({ user: null, accessToken: null, role: null }),
 }));
 
 export default useUserStore;

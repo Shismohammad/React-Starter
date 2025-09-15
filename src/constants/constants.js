@@ -1,5 +1,11 @@
-export const API_BASE_URL = 'https://api.example.com';
-export const TOKEN_KEY = 'auth_token';
+export const API_CONFIG = {
+  API_URL: 'http://localhost:8000/api/v1',
+  TIMEOUT: 5000,
+  HEADERS: {
+    'Content-Type': 'application/json',
+    accept: 'application/json',
+  },
+};
 
 export const ROUTES = {
   HOME: '/',

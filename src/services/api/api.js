@@ -38,7 +38,7 @@ api.interceptors.response.use(
   async (error) => {
     let originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest?.sent) {
+    if (error.response?.status === 401 && !originalRequest?.sent) {
       try {
         originalRequest.sent = true;
 
@@ -49,7 +49,7 @@ api.interceptors.response.use(
 
         // console.log('New Access token:', response.data.data.accessToken);
 
-        if (response.data.data.accessToken) {
+        if (response?.data?.data?.accessToken) {
           // Update the original request with the new access token
           originalRequest.headers.Authorization = `Bearer ${response.data.data.accessToken}`;
 
@@ -65,8 +65,16 @@ api.interceptors.response.use(
       } catch (e) {
         // remove token from LocalStorage or setToken(null) and navigate to login
         useUserStore.setState({ user: null, accessToken: null, role: null });
-        window.location.href = '/login';
+        // window.location.href = '/login';
         // navigate('/login', { state: { from: location }, replace: true });
+
+        // const searchParams = new URLSearchParams();
+        // const redirectTo =
+        //   searchParams.get('redirectTo') || window.location.pathname;
+
+        // window.location.href = `/auth/login?redirectTo=${encodeURIComponent(
+        //   redirectTo
+        // )}`;
       }
     }
     return Promise.reject(error);

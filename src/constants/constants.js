@@ -1,5 +1,7 @@
+const baseURL = import.meta.env.VITE_API_BASE_URL;
+
 export const API_CONFIG = {
-  API_URL: 'http://localhost:8000/api/v1',
+  API_URL: baseURL,
   TIMEOUT: 5000,
   HEADERS: {
     'Content-Type': 'application/json',

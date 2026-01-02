@@ -25,7 +25,6 @@ dist-ssr
 
 # Ignore env files
 .env
-.env.*
 !.env.example
 ./src/config/env/.env
 !./src/config/env/.env.example

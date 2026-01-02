@@ -21,7 +21,7 @@ export default function App() {
 
     // console.log(response);
 
-    if (response.statusCode === 200 && response.success) {
+    if ((response.statusCode === 200 && response.success) || response.message) {
       console.log('User logged out successfully');
       useUserStore.setState({ user: null, accessToken: null, role: null });
     }

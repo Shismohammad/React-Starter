@@ -3,10 +3,9 @@ import { API_CONFIG } from '../../constants/constants';
 import useUserStore from '../../store/zustand/userStore';
 
 const api = axios.create({
-  baseURL: `${API_CONFIG.API_URL}`,
-  timeout: `${API_CONFIG.TIMEOUT}`,
-  headers: `${API_CONFIG.HEADERS}`,
-  withCredentials: true,
+  baseURL: API_CONFIG.API_URL,
+  timeout: API_CONFIG.TIMEOUT,
+  headers: API_CONFIG.HEADERS,
 });
 
 /*  This will ensure that the access token is included in the headers of every request made by the API client */
@@ -43,7 +42,7 @@ api.interceptors.response.use(
         originalRequest.sent = true;
 
         // Call the refresh token endpoint to get a new access token
-        const response = await api.post('/users/refresh-token', {
+        const response = await api.post('/auth/refresh-token', {
           withCredentials: true,
         });
 

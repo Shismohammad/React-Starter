@@ -1,7 +1,7 @@
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 export const API_CONFIG = {
-  API_URL: baseURL,
+  API_URL: baseURL || 'https://dummyjson.com',
   TIMEOUT: 5000,
   HEADERS: {
     'Content-Type': 'application/json',

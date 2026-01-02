@@ -7,12 +7,15 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const email = formData.get('email');
+    const username = formData.get('username');
     const password = formData.get('password');
 
     try {
-      const response = await login({ email, password });
-      setUser(response.user);
+      const response = await login({
+        username: username,
+        password: password,
+      });
+      setUser(response);
       setAccessToken(response.accessToken);
       console.log('User Login successfully');
     } catch (error) {
@@ -30,21 +33,23 @@ export default function Login() {
           <label className="block">
             <span>Email</span>
             <input
-              className="flex h-9 w-full rounded-md border-fuchsia-500 border-1 shadow-md mt-1 px-3"
-              type="email"
-              name="email"
-              autoComplete="email"
+              className="flex h-9 w-full rounded-md border-fuchsia-500 border shadow-md mt-1 px-3"
+              type="text"
+              name="username"
+              autoComplete="username"
             />
           </label>
+
           <label className="block">
             <span>Password</span>
             <input
-              className="flex h-9 w-full rounded-md border-fuchsia-500 border-1 shadow-md mt-1 px-3"
+              className="flex h-9 w-full rounded-md border-fuchsia-500 border shadow-md mt-1 px-3"
               type="password"
               name="password"
               autoComplete="current-password"
             />
           </label>
+
           <div className="justify-center flex flex-col gap-4">
             <button
               type="submit"
@@ -52,7 +57,8 @@ export default function Login() {
             >
               Log in
             </button>
-            <button className="h-9 rounded-full text-fuchsia-600 hover:text-fuchsia-400 border-fuchsia-600 border-1">
+
+            <button className="h-9 rounded-full text-fuchsia-600 hover:text-fuchsia-400 border-fuchsia-600 border">
               Register
             </button>
           </div>

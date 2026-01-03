@@ -1,0 +1,30 @@
+import useUserStore from '../store/zustand/userStore';
+import { getCurrentUser } from '../services/user/user-service';
+import Toast from '../components/Toast';
+
+export default function Home() {
+  const { user } = useUserStore();
+
+  const getUser = async () => {
+    // const response = await getCurrentUser();
+    // console.log(response);
+  };
+
+  return (
+    <>
+      <Toast />
+      <div className="items-center justify-center flex h-screen flex-col gap-4">
+        Welcome {user?.username || 'User'} !
+        <button
+          onClick={() => {
+            getUser();
+          }}
+          type="submit"
+          className="bg-fuchsia-600 h-9 px-4 rounded-full text-white hover:bg-fuchsia-500"
+        >
+          Get User
+        </button>
+      </div>
+    </>
+  );
+}

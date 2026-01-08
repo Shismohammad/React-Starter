@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  TelegramNotification:
+  Telegram_Notification:
     runs-on: ubuntu-latest
     steps:
     - name: Send Telegram Notification

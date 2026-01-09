@@ -2,22 +2,24 @@ name: Notify Telegram
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
-
   Telegram_Notification:
     runs-on: ubuntu-latest
     steps:
-    - name: Send Telegram Notification
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: |
-          ${{ github.actor }} created a commit:
-          Commit: ${{ github.event.head_commit.message }}
-          Repository: ${{ github.repository }}
-          Status: ${{ job.status }}
+      - name: Send Telegram Notification
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ${{ github.actor }} created a commit:
+            Commit: ${{ github.event.head_commit.message }}
+            Repository: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            On : "$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p ")"
+            Commit ID="${{ github.sha }}"
+            Status: ${{ job.status }}

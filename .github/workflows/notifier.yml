@@ -25,9 +25,14 @@ jobs:
           message: |
             🚀 *New Commit Pushed by ${{ github.actor }}*
 
-            📝 *Message:* ${{ github.event.head_commit.message }}
-            📂 *Repository:* `${{ github.repository }}`
-            🎋 *Branch:* `${{ github.ref_name }}`
+            📨 *Message:* ${{ github.event.head_commit.message }}
+
+            🗂 *Repository:* `${{ github.repository }}`
+
+            🌵 *Branch:* `${{ github.ref_name }}`
+
             ✅ *Status:* ${{ job.status }}
+
             📅 *Timestamp:* ${{ steps.get_time.outputs.TIME }}
-            🆔 *Commit ID:* `${{ github.sha }}`
+
+            🫆 *Commit ID:* `${{ github.sha }}`

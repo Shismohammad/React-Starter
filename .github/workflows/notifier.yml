@@ -9,10 +9,9 @@ on:
 jobs:
   Telegram_Notification:
     runs-on: ubuntu-latest
-    # env:
-    #   TIME: echo "$(TZ='Asia/Kolkata' date +"%Y-%m-%d %I:%M %p IST")"
     steps:
       - name: Get timestamp
+        id: get_time
         run: echo "TIME=$(TZ='Asia/Kolkata' date +'%Y-%m-%d %I:%M %p IST')" >> $GITHUB_OUTPUT
 
       - name: Send Telegram Notification
@@ -27,6 +26,6 @@ jobs:
             Commit: ${{ github.event.head_commit.message }}
             Repository: ${{ github.repository }}
             Branch: ${{ github.ref_name }}
-            Timedate: ${{env.TIME}}
+            Timedate: ${{steps.get_time.outputs.TIME}}
             Commit ID: ${{ github.sha }}
             Status: ${{ job.status }}

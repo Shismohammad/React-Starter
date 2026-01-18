@@ -38,3 +38,65 @@ export const deleteUser = async (id) => {
   const response = await api.delete(`/users/${id}`);
   return response.data.data;
 };
+
+export const saveUser = async (data) => {
+  // console.log('here');
+  const encoder = new TextEncoder();
+
+  const dataArray = encoder.encode(JSON.stringify(data));
+
+  var iv = crypto.getRandomValues(new Uint8Array(16));
+
+  const encriptedData = await crypto.subtle.encrypt(
+    {
+      name: 'AES-GCM',
+      iv: iv,
+    },
+    await crypto.subtle.generateKey(
+      {
+        name: 'AES-GCM',
+        length: 128,
+      },
+      true,
+      ['encrypt', 'decrypt']
+    ),
+    dataArray
+  );
+
+  localStorage.removeItem('user');
+
+  localStorage.setItem('user', encriptedData);
+};
+
+export const getUserDecrypted = async () => {
+  const sessionData = localStorage.getItem('user');
+
+  const encoder = new TextEncoder();
+
+  if (sessionData) {
+    // const bytes =
+    const encryptedData = new Uint8Array(sessionData);
+
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new Uint8Array(16), // Replace with the actual key used for encryption
+      { name: 'AES-GCM' },
+      false,
+      ['decrypt']
+    );
+
+    const decryptedData = await crypto.subtle.decrypt(
+      {
+        name: 'AES-GCM',
+        iv: encryptedData.slice(0, 12), // Extract the IV from the encrypted data
+      },
+
+      key,
+      encryptedData.slice(12) // The rest is the actual encrypted data
+    );
+
+    return JSON.parse(new TextDecoder().decode(decryptedData));
+  }
+
+  return null;
+};

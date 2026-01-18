@@ -20,7 +20,7 @@ export default function Login() {
       setUser(response);
       setAccessToken(response.accessToken);
       console.log('User Login successfully');
-      navigate('/home');
+      // navigate('/home');
     } catch (error) {
       console.error('Login error:', error);
     }

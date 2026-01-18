@@ -7,8 +7,9 @@ import useUserStore from './store/zustand/userStore.js';
 
 export default function App() {
   const { user } = useUserStore();
+  const userData = localStorage.getItem('user');
 
-  if (user === null) {
+  if (!userData) {
     return (
       <div>
         <Login />
@@ -22,8 +23,6 @@ export default function App() {
         <NavBar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/home" element={<Home />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

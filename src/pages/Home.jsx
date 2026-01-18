@@ -1,20 +1,26 @@
 import useUserStore from '../store/zustand/userStore';
-import { getCurrentUser } from '../services/user/user-service';
+import {
+  getCurrentUser,
+  getUserDecrypted,
+} from '../services/user/user-service';
 import Toast from '../components/Toast';
 
 export default function Home() {
   const { user } = useUserStore();
 
   const getUser = async () => {
-    // const response = await getCurrentUser();
-    // console.log(response);
+    const response = await getUserDecrypted();
+    console.log(response);
   };
 
   return (
     <>
       <Toast />
       <div className="items-center justify-center flex h-screen flex-col gap-4">
-        Welcome {user?.username || 'User'} !
+        <div className="font-serif text-4xl">
+          Welcome {user?.username || 'User'} !
+        </div>
+
         <button
           onClick={() => {
             getUser();

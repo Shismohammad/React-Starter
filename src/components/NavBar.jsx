@@ -14,7 +14,7 @@ export default function NavBar() {
     if ((response.statusCode === 200 && response.success) || response.message) {
       console.log('User logged out successfully');
       useUserStore.setState({ user: null, accessToken: null, role: null });
-
+      localStorage.removeItem('user');
       navigate('/login');
     }
   };

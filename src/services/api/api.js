@@ -64,16 +64,21 @@ api.interceptors.response.use(
       } catch (e) {
         // remove token from LocalStorage or setToken(null) and navigate to login
         useUserStore.setState({ user: null, accessToken: null, role: null });
+        localStorage.removeItem('user');
         // window.location.href = '/login';
         // navigate('/login', { state: { from: location }, replace: true });
 
-        // const searchParams = new URLSearchParams();
-        // const redirectTo =
-        //   searchParams.get('redirectTo') || window.location.pathname;
+        const searchParams = new URLSearchParams();
 
-        // window.location.href = `/auth/login?redirectTo=${encodeURIComponent(
-        //   redirectTo
-        // )}`;
+        const redirectTo =
+          searchParams.get('redirectTo') ||
+          window.location.pathname + window.location.search;
+
+        // const currentUrl = window.location.pathname + window.location.search;
+
+        window.location.href = `/login?redirectTo=${encodeURIComponent(
+          redirectTo
+        )}`;
       }
     }
     return Promise.reject(error);

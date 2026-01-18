@@ -1,4 +1,5 @@
 import api from '../api/api';
+import { saveUser } from '../user/user-service';
 
 /* api call definitions for auth (types, schemas, requests): these are not part of features as this is a module shared across features
  */
@@ -7,9 +8,11 @@ export const login = async (data) => {
   const response = await api.post('/auth/login', data);
 
   if (response.data.data) {
+    await saveUser(response.data.data);
     return response.data.data;
   }
-
+  
+  await saveUser(response.data);
   return response.data;
 };
 

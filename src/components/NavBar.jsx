@@ -1,21 +1,25 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo.svg';
 import useUserStore from '../store/zustand/userStore';
 import { logout } from '../services/auth/auth-service';
 
 export default function NavBar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const logoutUser = async () => {
-    const response = await logout();
-
-    // console.log(response);
-
-    if ((response.statusCode === 200 && response.success) || response.message) {
-      console.log('User logged out successfully');
-      useUserStore.setState({ user: null, accessToken: null, role: null });
+    try {
+      const response = await logout();
+      console.log('User logged out successfully', response);
+      // console.log(response);
+    } catch (error) {
+      console.error('Logout API failed, proceeding with local cleanup', error);
+    } finally {
       localStorage.removeItem('user');
-      navigate('/login');
+
+      useUserStore.setState({ user: null, accessToken: null, role: null });
+
+      navigate('/login', { state: { from: location } });
     }
   };
 

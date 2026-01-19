@@ -10,19 +10,19 @@ const api = axios.create({
 
 /*  This will ensure that the access token is included in the headers of every request made by the API client */
 api.interceptors.request.use(
-  (config) => {
+  (request) => {
     // Get Access Token in stored in memory (variable) etc.
     const accessToken = useUserStore.getState().accessToken;
 
     // console.log('Access Token from store:', accessToken);
 
-    if (!config._retry && accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    if (!request._retry && accessToken) {
+      request.headers.Authorization = `Bearer ${accessToken}`;
     }
 
-    // console.warn('API Request config:', config.headers.Authorization);
+    // console.warn('API Request config:', request.headers.Authorization);
 
-    return config;
+    return request;
   },
   (error) => {
     return Promise.reject(error);
@@ -37,48 +37,57 @@ api.interceptors.response.use(
   async (error) => {
     let originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest?.sent) {
-      try {
-        originalRequest.sent = true;
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true; // Mark the request as retried to avoid infinite loops.
 
+      try {
         // Call the refresh token endpoint to get a new access token
-        const response = await api.post('/auth/refresh-token', {
-          withCredentials: true,
-        });
+        const response = await axios.post(
+          `${API_CONFIG.API_URL}/auth/refresh-token`,
+          {
+            withCredentials: true,
+          }
+        );
 
         // console.log('New Access token:', response.data.data.accessToken);
 
         if (response?.data?.data?.accessToken) {
-          // Update the original request with the new access token
-          originalRequest.headers.Authorization = `Bearer ${response.data.data.accessToken}`;
-
           // Set the new access token in the zustand store
           useUserStore.setState({
             accessToken: response.data.data.accessToken,
           });
+
+          // Update the original request with the new access token
+          originalRequest.headers.Authorization = `Bearer ${response.data.data.accessToken}`;
+
+          // Update the authorization header with the new access token.
+          // api.defaults.headers.common['Authorization'] =
+          //   `Bearer ${response.data.data.accessToken}`;
         }
 
-        originalRequest._retry = true;
-
         return api(originalRequest);
-      } catch (e) {
-        // remove token from LocalStorage or setToken(null) and navigate to login
+      } catch (refreshError) {
+        console.warn('Token refresh failed:', refreshError);
+
+        // remove token from LocalStorage or setToken(null) and navigate to login page
+
         useUserStore.setState({ user: null, accessToken: null, role: null });
         localStorage.removeItem('user');
-        // window.location.href = '/login';
-        // navigate('/login', { state: { from: location }, replace: true });
 
-        const searchParams = new URLSearchParams();
+        // const redirectTo = window.location.pathname + window.location.search;
 
-        const redirectTo =
-          searchParams.get('redirectTo') ||
-          window.location.pathname + window.location.search;
+        // history.pushState(
+        //   { page: 'login' },
+        //   'Login',
+        //   `/login?redirectTo=${encodeURIComponent(redirectTo)}`
+        // );
 
-        // const currentUrl = window.location.pathname + window.location.search;
+        // This will reload the page to ensure the navigation takes effect
+        // window.location.href = `/login?redirectTo=${encodeURIComponent(
+        //   redirectTo
+        // )}`;
 
-        window.location.href = `/login?redirectTo=${encodeURIComponent(
-          redirectTo
-        )}`;
+        return Promise.reject(refreshError);
       }
     }
     return Promise.reject(error);

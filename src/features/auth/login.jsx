@@ -1,28 +1,41 @@
 import useUserStore from '../../store/zustand/userStore';
 import { login } from '../../services/auth/auth-service';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function Login() {
-  const { setUser, setAccessToken } = useUserStore();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { setUser, setAccessToken } = useUserStore();
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setIsLoading(true);
+
     const formData = new FormData(event.target);
-    const username = formData.get('username');
-    const password = formData.get('password');
+    const credentials = Object.fromEntries(formData);
 
     try {
-      const response = await login({
-        username: username,
-        password: password,
-      });
-      setUser(response);
+      const response = await login(credentials);
+      console.log('Login successful');
+
+      setUser(response.user);
       setAccessToken(response.accessToken);
-      console.log('User Login successfully');
-      // navigate('/home');
+
+      const redirectTo = location.state?.from;
+
+      navigate(redirectTo, { replace: true });
+      // history.back();
+
+      event.target.reset();
     } catch (error) {
+      const message = error || 'Login failed. Please try again.';
+      setErrorMessage(message);
       console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

@@ -74,13 +74,13 @@ api.interceptors.response.use(
         useUserStore.setState({ user: null, accessToken: null, role: null });
         localStorage.removeItem('user');
 
-        // const redirectTo = window.location.pathname + window.location.search;
+        const redirectTo = location.pathname + location.search;
 
-        // history.pushState(
-        //   { page: 'login' },
-        //   'Login',
-        //   `/login?redirectTo=${encodeURIComponent(redirectTo)}`
-        // );
+        history.pushState(
+          { page: 'login' },
+          'Login',
+          `/login?redirectTo=${encodeURIComponent(redirectTo)}`
+        );
 
         // This will reload the page to ensure the navigation takes effect
         // window.location.href = `/login?redirectTo=${encodeURIComponent(

@@ -19,7 +19,7 @@ export default function NavBar() {
 
       useUserStore.setState({ user: null, accessToken: null, role: null });
 
-      navigate('/login', { state: { from: location } });
+      navigate('/login', { replace: true });
     }
   };
 

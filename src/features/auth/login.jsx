@@ -1,11 +1,10 @@
 import useUserStore from '../../store/zustand/userStore';
 import { login } from '../../services/auth/auth-service';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 export default function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { setUser, setAccessToken } = useUserStore();
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +23,8 @@ export default function Login() {
       setUser(response.user);
       setAccessToken(response.accessToken);
 
-      const redirectTo = location.state?.from;
+      const queryParams = new URLSearchParams(location.search);
+      const redirectTo = queryParams.get('redirectTo') || '/';
 
       navigate(redirectTo, { replace: true });
       // history.back();

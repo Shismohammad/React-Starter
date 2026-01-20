@@ -12,14 +12,16 @@ export default function NavBar() {
       const response = await logout();
       console.log('User logged out successfully', response);
       // console.log(response);
+
+      navigate('/login', { replace: true });
     } catch (error) {
-      console.error('Logout API failed, proceeding with local cleanup', error);
+      console.error('Logout API failed : ', error);
     } finally {
+      console.warn('Proceeding with local cleanup');
+
       localStorage.removeItem('user');
 
       useUserStore.setState({ user: null, accessToken: null, role: null });
-
-      navigate('/login', { replace: true });
     }
   };
 
